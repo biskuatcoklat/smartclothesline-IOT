@@ -60,17 +60,22 @@ void loop() {
   Serial.println(posisi);
 
   if (cahaya > 10 && hujan > 1000 && posisi == 0 && manual == 0)
-  {//cerah tidak hujan dan posisi jemuran di dalam maka jemuran akan keluar
+  {//cerah tidak hujan dan posisi jemuran di dalam maka jemuran akan keluar secara otomatis
     myservo.write(180);
     posisi = 1;
   }
   else if (cahaya < 10 && hujan > 1000 && posisi == 1 && manual == 1)
-  {//gelap dan tidak hujan dan posisi jemuran sedang diluar maka jemuran akan masuk
+  {//gelap dan tidak hujan dan posisi jemuran sedang diluar Maka bisa di bisa di kontrol manual di blynk
+    myservo.write(0);
+    posisi = 0;
+  }
+  else if (cahaya < 10 && hujan < 1000 && posisi == 1 && manual == 0)
+  {//gelap dan tidak hujan dan posisi jemuran sedang diluar maka jemuran akan masuk secara otomatis
     myservo.write(0);
     posisi = 0;
   }
   else if (cahaya > 10 && hujan < 1000 && posisi == 1 && manual == 0)
-  {// cerah tapi hujan posisi dan posisi jemuran sedang diluar maka jemuran akan masuk
+  {// cerah tapi hujan posisi dan posisi jemuran sedang diluar maka jemuran akan masuk secara otomatis 
     myservo.write(0);    
     posisi = 0;
   } 
