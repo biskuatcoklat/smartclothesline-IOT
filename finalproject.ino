@@ -3,11 +3,18 @@
 #define BLYNK_AUTH_TOKEN "o4tpnRdfMPYxI2MyQncAxKU4kOPDF2Q6"
 char ssid [] = "Durio Indigo";
 char pass [] = "indigo123";
-// Comment this out to disable prints and save space
+
 #define BLYNK_PRINT Serial
 #include <ESP8266WiFi.h>
 #include <BlynkSimpleEsp8266.h>
 #include <Servo.h>
+#include <WiFiClient.h>
+#include <ThingSpeak.h>
+
+WiFiClient client; //mengecek jika client sudah terhubung
+unsigned long myChannelNumber = 2001632; //ID akun ThingSpeak
+const char * myWriteAPIKey = "RPNCM8KGJZEWTTBO";
+
 char auth[] = BLYNK_AUTH_TOKEN;
 BlynkTimer timer;
 
@@ -43,6 +50,7 @@ void setup() {
   myservo.write(0);//mengatur pergerakan servo berdasarkan derajat
   Blynk.begin(auth, ssid, pass);
   timer.setInterval(1000L, myTimerEvent);
+  ThingSpeak.begin(client); //melakukan inisialisasi ke thingspeak
 }
 
 void loop() {
@@ -60,7 +68,7 @@ void loop() {
   Serial.println(posisi);
 
   if (cahaya > 10 && hujan > 1000 && posisi == 0 && manual == 0)
-  {//cerah tidak hujan dan posisi jemuran di dalam maka jemuran akan keluar secara otomatis
+  {//cerah dan tidak hujan dan posisi jemuran di dalam maka jemuran akan keluar secara otomatis
     myservo.write(180);
     posisi = 1;
   }
@@ -78,7 +86,11 @@ void loop() {
   {// cerah tapi hujan posisi dan posisi jemuran sedang diluar maka jemuran akan masuk secara otomatis 
     myservo.write(0);    
     posisi = 0;
-  } 
+  }
+  ThingSpeak.writeField(myChannelNumber, 1, hujan , myWriteAPIKey); 
+  ThingSpeak.writeField(myChannelNumber, 2, cahaya, myWriteAPIKey); 
+  //data akan tampilkan pada thingspeak sesuai dengan akun yang dihubungkan
+  delay(1000); 
 }
 
 BLYNK_WRITE(V1)
